@@ -1,0 +1,100 @@
+@startuml
+' =============================================
+' DIAGRAMA DE CASOS DE USO - BATD
+' =============================================
+skinparam style strictuml
+skinparam RoundCorner 15
+skinparam defaultFontName "Arial"
+skinparam backgroundColor white
+skinparam Shadowing true
+skinparam dpi 300
+skinparam ArrowThickness 1.5
+skinparam defaultFontStyle bold
+skinparam noteFontStyle bold
+skinparam ArrowColor darkgreen
+
+skinparam actor {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+}
+
+skinparam usecase {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 12
+}
+
+skinparam rectangle {
+    BackgroundColor #FBFCFC
+    BorderColor #5D6D7E
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    RoundCorner 10
+}
+
+skinparam noteBackgroundColor #FFFFCC
+skinparam noteBorderColor black
+skinparam noteFontColor #000000
+
+title Diagrama de Casos de Uso del Laboratorio de Regresión Bursátil (Tema 12)
+
+left to right direction
+
+actor "Estudiante" as EST
+actor "Docente" as DOC
+actor "Gestor de portafolio" as GES
+actor "Yahoo Finance" as YF
+
+rectangle "Laboratorio de Regresión Bursátil (Tema 12)" {
+    usecase "CU01 Estimar el beta de mercado de una acción" as CU01
+    usecase "CU02 Diagnosticar los supuestos de la regresión" as CU02
+    usecase "CU03 Estimar exposiciones sectoriales con Lasso" as CU03
+    usecase "CU04 Pronosticar la volatilidad de la próxima semana" as CU04
+    usecase "CU05 Comparar árboles y ensambles con los lineales" as CU05
+    usecase "CU06 Clasificar el régimen de volatilidad" as CU06
+    usecase "CU07 Pronosticar 30 sesiones con rango" as CU07
+    usecase "CU08 Consultar el tablero de pronóstico" as CU08
+    usecase "CU09 Revisar el trabajo grupal" as CU09
+
+    usecase "Descargar y validar los precios" as INC1
+    usecase "Partir cronológicamente con embargo" as INC2
+    usecase "Comparar con la referencia ingenua" as INC3
+    usecase "Buscar hiperparámetros con validación cronológica" as EXT1
+    usecase "Ajustar el umbral por costos" as EXT2
+    usecase "Medir la cobertura del rango" as EXT3
+}
+
+EST --> CU01
+EST --> CU02
+EST --> CU03
+EST --> CU04
+EST --> CU05
+EST --> CU06
+EST --> CU07
+GES --> CU08
+DOC --> CU09
+YF <-- INC1
+
+CU01 ..> INC1 : <<include>>
+CU03 ..> INC1 : <<include>>
+CU04 ..> INC2 : <<include>>
+CU05 ..> INC2 : <<include>>
+CU06 ..> INC2 : <<include>>
+CU07 ..> INC2 : <<include>>
+CU04 ..> INC3 : <<include>>
+CU07 ..> INC3 : <<include>>
+CU02 ..> CU01 : <<include>>
+EXT1 .up.> CU05 : <<extend>>
+EXT1 .up.> CU04 : <<extend>>
+EXT2 .up.> CU06 : <<extend>>
+EXT3 .up.> CU07 : <<extend>>
+CU08 ..> CU07 : <<include>>
+CU09 ..> CU07 : <<include>>
+
+@enduml

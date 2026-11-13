@@ -44,6 +44,30 @@ cd tablero_g5
 python 26.11.12.06_Servidor_Flask_Tablero.py     # abrir http://127.0.0.1:5000
 ```
 
+## Diagramas UML (`diagramas/`)
+
+Cinco diagramas UML del sistema completo, escritos en [PlantUML](https://plantuml.com/) (`.puml`) y renderizados a imagen (`.png`). Cubren el laboratorio entero, de la Guía 1 a la 5, y no uno por guía.
+
+| Diagrama | Qué muestra | Imagen | Código |
+|---|---|---|---|
+| Componentes | Fuentes de datos, preparación, modelado, evaluación y despliegue del sistema de regresión bursátil | [PNG](diagramas/26.11.12.T12_UML_01_Componentes.png) | [`.puml`](diagramas/26.11.12.T12_UML_01_Componentes.puml) |
+| Secuencia | Cómo se produce el pronóstico a 30 sesiones de la Guía 5 | [PNG](diagramas/26.11.12.T12_UML_02_Secuencia.png) | [`.puml`](diagramas/26.11.12.T12_UML_02_Secuencia.puml) |
+| Clases | Clases del laboratorio de regresión bursátil | [PNG](diagramas/26.11.12.T12_UML_03_Clases.png) | [`.puml`](diagramas/26.11.12.T12_UML_03_Clases.puml) |
+| Actividades | Flujo del laboratorio de contraste de regresión, del precio al informe | [PNG](diagramas/26.11.12.T12_UML_04_Actividades.png) | [`.puml`](diagramas/26.11.12.T12_UML_04_Actividades.puml) |
+| Casos de uso | Actores y casos de uso del laboratorio | [PNG](diagramas/26.11.12.T12_UML_05_Casos_de_Uso.png) | [`.puml`](diagramas/26.11.12.T12_UML_05_Casos_de_Uso.puml) |
+
+![Diagrama de componentes del sistema de regresión bursátil](diagramas/26.11.12.T12_UML_01_Componentes.png)
+
+![Diagrama de secuencia del sistema de pronóstico a 30 sesiones](diagramas/26.11.12.T12_UML_02_Secuencia.png)
+
+![Diagrama de clases del laboratorio de regresión bursátil](diagramas/26.11.12.T12_UML_03_Clases.png)
+
+![Diagrama de actividades del laboratorio de contraste de regresión](diagramas/26.11.12.T12_UML_04_Actividades.png)
+
+![Diagrama de casos de uso del laboratorio de regresión bursátil](diagramas/26.11.12.T12_UML_05_Casos_de_Uso.png)
+
+Los PNG son grandes (hasta unos 10 000 píxeles de ancho): en GitHub se ven reducidos y se amplían al abrirlos. Para regenerarlos desde el código, `plantuml -tpng diagramas/*.puml`.
+
 ## Cómo ejecutarlos
 
 ```bash

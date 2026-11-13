@@ -1,0 +1,208 @@
+@startuml
+' =============================================
+' PROTOCOLO DE DIAGRAMA DE CLASES - BATD
+' =============================================
+skinparam style strictuml
+skinparam RoundCorner 15
+skinparam Padding 10
+skinparam defaultFontName "Arial"
+skinparam backgroundColor white
+skinparam Shadowing true
+skinparam dpi 300
+skinparam ArrowThickness 1.5
+
+' --- NEGRITAS GLOBALES ---
+skinparam defaultFontStyle bold
+skinparam noteFontStyle bold
+
+' --- FLECHAS ---
+skinparam ArrowColor darkgreen
+skinparam ArrowFontStyle bold
+skinparam ArrowFontColor black
+
+' --- CLASE ---
+skinparam class {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    AttributeFontColor black
+    AttributeFontSize 12
+    AttributeFontStyle plain
+    StereotypeFontColor #5D6D7E
+    StereotypeFontSize 11
+    StereotypeFontStyle italic
+    HeaderBackgroundColor #5DADE2
+    BorderThickness 2
+}
+
+' --- INTERFAZ ---
+skinparam interface {
+    BackgroundColor #AED6F1
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+}
+
+' --- CLASE ABSTRACTA ---
+skinparam abstract {
+    BackgroundColor #AED6F1
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    HeaderBackgroundColor #85C1E9
+}
+
+' --- ENUMERACIÓN ---
+skinparam enum {
+    BackgroundColor #F7DC6F
+    BorderColor #5D6D7E
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    AttributeFontColor black
+    AttributeFontSize 12
+}
+
+' --- PAQUETE ---
+skinparam package {
+    BackgroundColor #F7DC6F
+    BorderColor #5D6D7E
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    BorderThickness 2
+}
+
+' --- NOTAS ---
+skinparam noteBackgroundColor #FFFFCC
+skinparam noteBorderColor black
+skinparam noteFontColor #000000
+
+' --- LEYENDA ---
+skinparam legendBackgroundColor #FBFCFC
+skinparam legendBorderColor #5D6D7E
+skinparam legendFontColor black
+skinparam legendFontSize 11
+
+title Diagrama de Clases del Laboratorio de Regresión Bursátil
+
+package "Datos" {
+    class SerieDePrecios {
+        + ticker : String
+        + fechaInicio : Date
+        + fechaCorte : Date
+        + cierres : Serie
+        + rendimientosLog() : Serie
+        + volatilidad(ventana : int) : Serie
+    }
+    class ConstructorDeVariables {
+        + ventanas : List<int>
+        + variablesCausales(serie : SerieDePrecios) : Tabla
+        + objetivoFuturo(tipo : TipoObjetivo, horizonte : int) : Serie
+    }
+    enum TipoObjetivo {
+        RETORNO
+        VOLATILIDAD
+        DIRECCION
+        REGIMEN
+        MULTIHORIZONTE
+    }
+    class ParticionCronologica {
+        + fraccionEntrenamiento : double
+        + embargo : int
+        + entrenamiento() : Tabla
+        + prueba() : Tabla
+        + validacionCronologica(pliegues : int, gap : int) : Iterador
+    }
+}
+package "Modelos" {
+    abstract class ModeloDeRegresion {
+        + nombre : String
+        + hiperparametros : Diccionario
+        + ajustar(X : Tabla, y : Serie) : void
+        + predecir(X : Tabla) : Serie
+    }
+    class RegresionLineal {
+        + coeficientes : Vector
+        + interceptos : double
+        + resumenEstadistico() : Tabla
+    }
+    class RegresionRegularizada {
+        + alpha : double
+        + l1Ratio : double
+        + coeficientesNoNulos() : int
+    }
+    class RegresionLogistica {
+        + C : double
+        + umbral : double
+        + probabilidad(X : Tabla) : Serie
+        + razonesDeOdds() : Tabla
+    }
+    class EnsambleDeArboles {
+        + numArboles : int
+        + profundidadMaxima : int
+        + tasaDeAprendizaje : double
+        + importanciaPorPermutacion(X : Tabla, y : Serie) : Tabla
+    }
+    class RegresorMultisalida {
+        + horizontes : int
+        + predecirHorizontes(X : Tabla) : Matriz
+    }
+}
+package "Evaluación y despliegue" {
+    class Evaluador {
+        + mae : double
+        + rmse : double
+        + r2 : double
+        + compararConReferencia(ref : Serie) : Tabla
+        + diagnosticoDeResiduos() : Tabla
+    }
+    class IntervaloDePronostico {
+        + nivel : double
+        + metodo : String
+        + calcular(horizonte : int) : Rango
+        + cobertura(prueba : Tabla) : double
+    }
+    class Pronostico {
+        + fechaCorte : Date
+        + ultimoCierre : double
+        + central : Serie
+        + inferior : Serie
+        + superior : Serie
+        + exportarJson() : Archivo
+        + exportarCsv() : Archivo
+    }
+    class Tablero {
+        + tema : String
+        + umbralAlerta : double
+        + mostrarVelas() : void
+        + mostrarRango() : void
+        + evaluarAlerta() : boolean
+    }
+}
+
+SerieDePrecios "1" --> "1" ConstructorDeVariables : alimenta
+ConstructorDeVariables ..> TipoObjetivo
+ConstructorDeVariables "1" --> "1" ParticionCronologica : produce la tabla de
+ModeloDeRegresion <|-- RegresionLineal
+RegresionLineal <|-- RegresionRegularizada
+ModeloDeRegresion <|-- RegresionLogistica
+ModeloDeRegresion <|-- EnsambleDeArboles
+ModeloDeRegresion <|-- RegresorMultisalida
+ParticionCronologica "1" --> "*" ModeloDeRegresion : entrena y prueba
+ModeloDeRegresion "1" --> "1" Evaluador : se evalúa con
+RegresorMultisalida "1" --> "1..*" IntervaloDePronostico : acompaña
+RegresorMultisalida "1" --> "1" Pronostico : genera
+IntervaloDePronostico "1" --> "1" Pronostico : acota
+Pronostico "1" --> "1" Tablero : se muestra en
+
+legend right
+  Toda variable se calcula solo con datos hasta el cierre de t;
+  el embargo de la partición es igual o mayor al horizonte del objetivo.
+end legend
+
+@enduml

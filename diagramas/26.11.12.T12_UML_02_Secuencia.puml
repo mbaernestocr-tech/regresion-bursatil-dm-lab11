@@ -1,0 +1,104 @@
+@startuml
+' =============================================
+' PROTOCOLO DE DIAGRAMA DE SECUENCIA - BATD
+' =============================================
+skinparam actorStyle awesome
+skinparam style strictuml
+skinparam RoundCorner 15
+skinparam BoxPadding 15
+skinparam ParticipantPadding 20
+skinparam defaultFontName "Arial"
+skinparam backgroundColor white
+skinparam Shadowing true
+skinparam dpi 300
+skinparam ArrowThickness 1.5
+skinparam defaultFontStyle bold
+skinparam noteFontStyle bold
+skinparam sequenceGroupHeaderFontStyle bold
+
+skinparam sequence {
+    ArrowColor darkgreen
+    LifeLineBorderColor black
+    LifeLineBorderThickness 2.5
+    LifeLineBackgroundColor #85C1E9
+    GroupBorderColor #5D6D7E
+    GroupBodyBackgroundColor #FBFCFC
+    GroupHeaderFontColor black
+    GroupBackgroundColor #CDCDCD
+}
+skinparam participant {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+}
+skinparam actor {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+}
+skinparam database {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+}
+skinparam noteBackgroundColor #FFFFCC
+skinparam noteBorderColor black
+skinparam noteFontColor #000000
+
+title Diagrama de Secuencia del Sistema de Pronóstico a 30 Sesiones (Guía 5)
+
+actor "Estudiante" as EST
+participant "Notebook\nde Colab" as NB
+participant "Yahoo Finance\n(yfinance)" as YF
+participant "Constructor de\nvariables y objetivos" as CON
+participant "Partición\ncronológica" as PAR
+participant "Modelos multisalida\n(Ridge, bosque, XGBoost)" as MOD
+participant "Evaluador\n(MAE por horizonte,\ncobertura)" as EVA
+participant "Exportador\n(JSON, CSV, HTML)" as EXP
+participant "Tablero / API" as TAB
+
+== 1. Cargar precios ==
+EST -> NB : ejecutar celdas de carga
+NB -> YF : descargar SPY (OHLCV) y VIX hasta la fecha de corte
+YF --> NB : 4 241 días de negociación
+alt la descarga falla
+    NB -> NB : leer el CSV de respaldo del curso
+end
+
+== 2. Construir variables causales y 30 objetivos ==
+NB -> CON : precios de cierre
+CON -> CON : rendimientos, volatilidades, VIX, medias móviles
+CON -> CON : retorno acumulado de t a t+h, h = 1..30
+CON --> NB : tabla con 13 variables y 30 objetivos
+
+== 3. Partir con embargo ==
+NB -> PAR : 70 % entrenamiento, 30 % prueba
+PAR --> NB : entrenamiento sin sus 30 últimas filas, prueba intacta
+
+== 4. Entrenar y comparar con referencias ==
+NB -> MOD : ajustar con el entrenamiento
+MOD --> NB : 30 pronósticos por día
+NB -> EVA : predicciones, persistencia y deriva histórica
+EVA --> NB : MAE por horizonte y acierto de signo
+alt ningún modelo supera a la deriva
+    NB -> NB : declarar que el nivel no es predecible
+end
+
+== 5. Intervalos y cobertura ==
+NB -> EVA : residuos de validación y cono de volatilidad
+EVA --> NB : cobertura observada frente al 80 % nominal
+
+== 6. Pronóstico final y despliegue ==
+NB -> MOD : reentrenar con todo el histórico
+MOD --> NB : 30 retornos desde el último cierre
+NB -> EXP : pronóstico, rango, métricas y 250 velas
+EXP --> TAB : dashboard_regresion_spy.json y tablero HTML
+TAB --> EST : velas, pronóstico central, rango 80 % y alerta
+
+@enduml

@@ -1,0 +1,96 @@
+@startuml
+' =============================================
+' DIAGRAMA DE ACTIVIDADES - BATD
+' =============================================
+skinparam style strictuml
+skinparam RoundCorner 15
+skinparam defaultFontName "Arial"
+skinparam backgroundColor white
+skinparam Shadowing true
+skinparam dpi 300
+skinparam ArrowThickness 1.5
+skinparam defaultFontStyle bold
+skinparam noteFontStyle bold
+skinparam ArrowColor darkgreen
+
+skinparam activity {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 13
+}
+
+skinparam activityDiamond {
+    BackgroundColor #F7DC6F
+    BorderColor #5D6D7E
+    FontColor black
+    FontStyle bold
+}
+
+skinparam noteBackgroundColor #FFFFCC
+skinparam noteBorderColor black
+skinparam noteFontColor #000000
+
+skinparam partition {
+    BackgroundColor #FBFCFC
+    BorderColor #5D6D7E
+    FontColor black
+    FontStyle bold
+}
+
+title Diagrama de Actividades — Laboratorio de Contraste de Regresión: del Precio al Informe
+
+start
+
+partition "Fase 1: Datos" {
+    :Descargar precios de Yahoo Finance (o leer el CSV de respaldo);
+    :Validar fechas, nulos y último cierre;
+    if (¿hay al menos 4 000 días?) then (sí)
+        :Calcular rendimientos logarítmicos;
+    else (no)
+        :Detenerse y reportar la fuente;
+        stop
+    endif
+}
+
+partition "Fase 2: Variables y objetivo" {
+    :Construir variables causales (rezagos, volatilidades, VIX, Parkinson);
+    :Elegir el objetivo: retorno t+1, volatilidad a 5 días,
+    dirección, régimen o 30 horizontes;
+    :Partir cronológicamente con embargo igual al horizonte;
+}
+
+partition "Fase 3: Modelado" {
+    fork
+        :Lineales: MCO, Ridge, Lasso, Elastic Net;
+    fork again
+        :Logística (si el objetivo es binario);
+    fork again
+        :Árboles y ensambles: RF, GB, XGBoost, LightGBM;
+    fork again
+        :Multisalida directa (30 sesiones);
+    end fork
+    :Elegir hiperparámetros con TimeSeriesSplit (gap = horizonte);
+}
+
+partition "Fase 4: Evaluación honesta" {
+    :Probar una sola vez en la prueba;
+    :Comparar con la referencia ingenua (cero, deriva o persistencia);
+    if (¿supera la referencia?) then (sí)
+        :Diagnosticar residuos, importancia por permutación e intervalos;
+        :Medir la cobertura del rango;
+    else (no)
+        :Declarar que el objetivo no tiene señal (por ejemplo, el retorno diario);
+    endif
+}
+
+partition "Fase 5: Despliegue" {
+    :Exportar JSON y CSV;
+    :Generar el tablero y servirlo con Flask;
+}
+
+:Redactar el informe con límites y aviso (no es asesoría);
+stop
+
+@enduml

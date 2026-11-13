@@ -1,0 +1,123 @@
+@startuml
+' =============================================
+' PROTOCOLO DE DIAGRAMA DE COMPONENTES - BATD
+' =============================================
+skinparam style strictuml
+skinparam RoundCorner 15
+skinparam Padding 10
+skinparam defaultFontName "Arial"
+skinparam backgroundColor white
+skinparam Shadowing true
+skinparam dpi 300
+skinparam ArrowThickness 1.5
+skinparam defaultFontStyle bold
+skinparam noteFontStyle bold
+skinparam ArrowColor darkgreen
+skinparam ArrowFontStyle bold
+
+skinparam component {
+    BackgroundColor #85C1E9
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    BorderThickness 2
+}
+skinparam interface {
+    BackgroundColor #AED6F1
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 12
+}
+skinparam package {
+    BackgroundColor #F7DC6F
+    BorderColor #5D6D7E
+    FontColor black
+    FontStyle bold
+    FontSize 14
+    BorderThickness 2
+}
+skinparam database {
+    BackgroundColor #82E0AA
+    BorderColor black
+    FontColor black
+    FontStyle bold
+    FontSize 14
+}
+skinparam noteBackgroundColor #FFFFCC
+skinparam noteBorderColor black
+skinparam noteFontColor #000000
+
+title Diagrama de Componentes del Sistema de Regresión Bursátil (Tema 12, Laboratorio 11)
+
+package "Fuentes de datos reales" {
+    cloud "Yahoo Finance\n(28 activos, OHLCV, VIX)" as YF
+    file "CSV de respaldo\n(foto del curso, carpeta D03)" as CSV
+}
+package "Preparación (solo pasado)" {
+    component "Rendimientos\nlogarítmicos" as REN
+    component "Variables causales\n(rezagos, volatilidades,\nVIX, Parkinson)" as VAR
+    component "Objetivos futuros\n(retorno, volatilidad,\ndirección, régimen, 30 horizontes)" as OBJ
+    component "Partición cronológica\ncon embargo" as PAR
+}
+package "Modelado" {
+    component "Lineales\n(MCO, Ridge, Lasso,\nElastic Net)" as LIN
+    component "Logística\n(dirección y régimen)" as LOG
+    component "Árboles y ensambles\n(RF, GB, XGBoost, LightGBM)" as ENS
+    component "Multisalida directa\n(30 sesiones)" as MUL
+}
+package "Evaluación" {
+    component "Métricas de regresión\n(MAE, RMSE, R², MAPE)" as MET
+    component "Diagnóstico de supuestos\n(residuos, VIF, ARCH, HC3)" as DIA
+    component "Validación cronológica\n(TimeSeriesSplit con gap)" as VAL
+    component "Referencias ingenuas\n(cero, deriva, persistencia)" as REF
+    component "Importancia por permutación\ny dependencia parcial" as IMP
+    component "Intervalos y cobertura\n(cuantiles, cono de volatilidad)" as INT
+}
+package "Despliegue" {
+    file "JSON y CSV\ndel pronóstico" as JSN
+    component "Tablero HTML\n(velas, rango, alerta)" as TAB
+    component "API Flask\n(/api/dashboard)" as API
+}
+component "Notebooks de\nGoogle Colab (G1 a G5)" as NB
+actor "Estudiante" as EST
+actor "Gestor de portafolio\n(lector del tablero)" as GES
+
+YF --> REN
+CSV ..> REN : respaldo
+REN --> VAR
+REN --> OBJ
+VAR --> PAR
+OBJ --> PAR
+PAR --> LIN
+PAR --> LOG
+PAR --> ENS
+PAR --> MUL
+LIN --> MET
+LIN --> DIA
+LOG --> MET
+ENS --> MET
+ENS --> IMP
+MUL --> MET
+MUL --> INT
+VAL --> LIN
+VAL --> ENS
+VAL --> LOG
+REF --> MET
+INT --> JSN
+MUL --> JSN
+JSN --> TAB
+JSN --> API
+API --> TAB
+EST --> NB
+NB ..> PAR : <<use>>
+NB ..> MET : <<use>>
+GES --> TAB
+note bottom of PAR
+  Las variables usan solo precios hasta el cierre de t;
+  entre entrenamiento y prueba se deja un embargo
+  igual al horizonte del objetivo (1, 5 o 30 sesiones).
+end note
+
+@enduml
