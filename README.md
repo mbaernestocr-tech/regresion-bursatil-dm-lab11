@@ -47,7 +47,7 @@ python 26.11.12.06_Servidor_Flask_Tablero.py     # abrir http://127.0.0.1:5000
 ## Cómo ejecutarlos
 
 ```bash
-git clone <URL-de-este-repositorio>
+git clone https://github.com/mbaernestocr-tech/regresion-bursatil-dm-lab11.git
 cd regresion-bursatil-dm-lab11
 python -m venv .venv && source .venv/bin/activate      # en Windows: .venv\Scripts\activate
 pip install -r requirements.txt
