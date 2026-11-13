@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+# salidas que genera la Guia 5 al ejecutarse dentro de notebooks/ (la copia de muestra esta en tablero_g5/)
+/notebooks/dashboard_regresion_spy.json
+/notebooks/pronostico_30_sesiones_spy.csv
+/notebooks/08_Tablero_Pronostico_SPY_30_sesiones.html
