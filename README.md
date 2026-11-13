@@ -39,6 +39,8 @@ La Guía 5 termina escribiendo `dashboard_regresion_spy.json`, `pronostico_30_se
 | `26.11.12.06_Servidor_Flask_Tablero.py` | Servidor Flask mínimo: sirve el tablero en `/` y el JSON en `/api/dashboard`. |
 | `dashboard_regresion_spy.json` | Datos del pronóstico que lee el servidor (salida de la Guía 5). |
 
+**Véalo en línea (GitHub Pages):** [tablero del pronóstico de SPY](https://mbaernestocr-tech.github.io/regresion-bursatil-dm-lab11/tablero_g5/08_Tablero_Pronostico_SPY_30_sesiones.html) · [portada](https://mbaernestocr-tech.github.io/regresion-bursatil-dm-lab11/). El servidor Flask no corre en Pages; solo se publica el HTML de un solo archivo.
+
 ```bash
 cd tablero_g5
 python 26.11.12.06_Servidor_Flask_Tablero.py     # abrir http://127.0.0.1:5000
